@@ -1,0 +1,914 @@
+/* ─────────────────────────────────────────────────────
+   Terminal Dark – Design System
+   Dark-first. Layered near-blacks. Syntax as palette.
+   ───────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── Reset ───────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+/* ── Tokens ──────────────────────────────────────── */
+:root {
+  /* Surface layers – depth through lightness, not shadows */
+  --bg-base:       #0A0B0D;
+  --bg-surface:    #101216;
+  --bg-elevated:   #16181D;
+
+  /* Borders – hairlines, not shadows */
+  --border-subtle: #1E2127;
+  --border-strong: #2A2E37;
+
+  /* Text tiers */
+  --text-primary:   #E6E8EB;
+  --text-secondary: #9BA1AC;
+  --text-tertiary:  #6B7280;
+  --text-disabled:  #454B54;
+
+  /* Syntax palette – the ONLY accent colours */
+  --syntax-keyword: #C792EA;
+  --syntax-string:  #C3E88D;
+  --syntax-func:    #82AAFF;
+  --syntax-number:  #F78C6C;
+  --syntax-comment: #5C6370;
+  --syntax-const:   #FFCB6B;
+  --syntax-error:   #F07178;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+
+  /* Spacing scale */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+
+  /* Radii – concentric: outer − gap = inner */
+  --radius-frame-outer: 16px;
+  --radius-frame-inner: 12px;
+  --radius-panel:       10px;
+  --radius-button:       8px;
+  --radius-tab:          6px;
+  --radius-inline:       4px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fade: 400ms;
+  --duration-quick: 150ms;
+}
+
+/* ── Base ────────────────────────────────────────── */
+body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--text-primary);
+  background-color: var(--bg-base);
+  overflow-x: hidden;
+}
+
+/* ── Typography ──────────────────────────────────── */
+.h1 {
+  font-size: clamp(36px, 5vw, 60px);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+}
+
+.h2 {
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+}
+
+.h3 {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.3;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+}
+
+.body-text {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  font-family: var(--font-sans);
+  color: var(--text-secondary);
+  max-width: 70ch;
+}
+
+.small-text {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  font-family: var(--font-sans);
+  color: var(--text-secondary);
+}
+
+.code-text {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  font-family: var(--font-mono);
+}
+
+.code-sm {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  font-family: var(--font-mono);
+}
+
+/* ── Two-tone headline ───────────────────────────── */
+.text-secondary-span {
+  color: var(--text-secondary);
+}
+
+/* ── Layout ──────────────────────────────────────── */
+.page-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: var(--space-lg);
+  padding-right: var(--space-lg);
+}
+
+/* ── Section spacing ─────────────────────────────── */
+.section {
+  padding-top: var(--space-4xl);
+  padding-bottom: var(--space-4xl);
+}
+
+.section-border {
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ── Asymmetric section header ───────────────────── */
+.section-header {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-3xl);
+}
+
+@media (min-width: 768px) {
+  .section-header {
+    grid-template-columns: 6fr 5fr;
+    gap: var(--space-2xl);
+  }
+}
+
+.section-index {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-top: var(--space-sm);
+}
+
+/* ── Double-border frame (§10.1) ─────────────────── */
+.frame-outer {
+  border-radius: var(--radius-frame-outer);
+  border: 1px solid var(--border-subtle);
+  background: #0D0E11;
+  padding: 4px;
+}
+
+.frame-inner {
+  border-radius: var(--radius-frame-inner);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+
+/* ── Code block chrome ───────────────────────────── */
+.code-chrome {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 10px 16px;
+  min-height: 40px;
+}
+
+.code-chrome-filename {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.code-chrome-lang {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* ── Code content ────────────────────────────────── */
+.code-content {
+  overflow-x: auto;
+  padding: var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-overflow-scrolling: touch;
+}
+
+.code-content::-webkit-scrollbar {
+  height: 6px;
+}
+
+.code-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.code-content::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 3px;
+}
+
+/* ── Line numbers ────────────────────────────────── */
+.line-number {
+  display: inline-block;
+  width: 2.5ch;
+  padding-right: var(--space-md);
+  text-align: right;
+  color: var(--text-disabled);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── Syntax colours ──────────────────────────────── */
+.syn-kw   { color: var(--syntax-keyword); }
+.syn-str  { color: var(--syntax-string); }
+.syn-fn   { color: var(--syntax-func); }
+.syn-num  { color: var(--syntax-number); }
+.syn-cmt  { color: var(--syntax-comment); }
+.syn-const{ color: var(--syntax-const); }
+.syn-err  { color: var(--syntax-error); }
+.syn-text { color: var(--text-primary); }
+
+/* ── Copy button ─────────────────────────────────── */
+.copy-btn {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: var(--space-xs);
+  border-radius: var(--radius-inline);
+  transition: color var(--duration-quick) ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-btn:hover {
+  color: var(--text-secondary);
+}
+
+.copy-btn:focus-visible {
+  outline: 2px solid var(--syntax-func);
+  outline-offset: 2px;
+}
+
+/* ── Primary button: light inverted, not accent-filled ─── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 12px 24px;
+  background: var(--text-primary);
+  color: var(--bg-base);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius-button);
+  cursor: pointer;
+  transition: opacity var(--duration-quick) ease-out;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  opacity: 0.88;
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--syntax-func);
+  outline-offset: 2px;
+}
+
+/* ── Secondary button: hairline border ───────────── */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 12px 24px;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-button);
+  cursor: pointer;
+  transition: border-color var(--duration-quick) ease-out,
+              background var(--duration-quick) ease-out;
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-tertiary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--syntax-func);
+  outline-offset: 2px;
+}
+
+/* ── Install command block ───────────────────────── */
+.install-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: var(--radius-button);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.install-prompt {
+  user-select: none;
+  -webkit-user-select: none;
+  color: var(--text-tertiary);
+}
+
+.install-command {
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+/* ── Package manager tabs ────────────────────────── */
+.pkg-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: var(--space-sm);
+}
+
+.pkg-tab {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--text-tertiary);
+  border: none;
+  border-radius: var(--radius-tab);
+  cursor: pointer;
+  transition: color var(--duration-quick) ease-out,
+              background var(--duration-quick) ease-out;
+}
+
+.pkg-tab:hover {
+  color: var(--text-secondary);
+}
+
+.pkg-tab.active {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
+/* ── Terminal block ──────────────────────────────── */
+.terminal-prompt {
+  color: var(--text-tertiary);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.terminal-input {
+  color: var(--text-primary);
+}
+
+.terminal-output {
+  color: var(--text-secondary);
+}
+
+.terminal-success {
+  color: var(--syntax-string);
+}
+
+.terminal-error {
+  color: var(--syntax-error);
+}
+
+/* ── Nav ─────────────────────────────────────────── */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background var(--duration-quick) linear;
+}
+
+.nav.scrolled {
+  background: var(--bg-elevated);
+}
+
+.nav-inner {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+.nav-logo {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.nav-logo-icon {
+  width: 22px;
+  height: 22px;
+  color: var(--syntax-func);
+}
+
+.nav-links {
+  display: none;
+  list-style: none;
+  gap: var(--space-lg);
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .nav-links {
+    display: flex;
+  }
+}
+
+.nav-link {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--duration-quick) ease-out;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid var(--syntax-func);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.nav-stars {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  padding: 6px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-tab);
+  text-decoration: none;
+  transition: border-color var(--duration-quick) ease-out;
+}
+
+@media (min-width: 640px) {
+  .nav-stars {
+    display: flex;
+  }
+}
+
+.nav-stars:hover {
+  border-color: var(--border-strong);
+}
+
+.nav-stars svg {
+  color: var(--syntax-const);
+}
+
+/* ── Highlight line ──────────────────────────────── */
+.highlight-line {
+  display: block;
+  border-left: 2px solid var(--syntax-func);
+  background: rgba(130, 170, 255, 0.05);
+  margin: 0 -16px;
+  padding: 0 16px;
+  padding-left: 14px;
+}
+
+/* ── Definition list for features ────────────────── */
+.def-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.def-item {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+  padding: var(--space-xl) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+@media (min-width: 768px) {
+  .def-item {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+}
+
+.def-item:first-child {
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ── Performance table ───────────────────────────── */
+.perf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.perf-table th {
+  text-align: left;
+  padding: var(--space-md) var(--space-md);
+  color: var(--text-tertiary);
+  font-weight: 400;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.perf-table td {
+  padding: var(--space-md) var(--space-md);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.perf-table tr:last-child td {
+  border-bottom: none;
+}
+
+.perf-table .perf-bar-cell {
+  width: 40%;
+}
+
+/* ── Bar track (§12.1 hairline rule in ch-wide track) ── */
+.perf-bar-track {
+  display: inline-block;
+  width: 20ch;
+  vertical-align: middle;
+  position: relative;
+  height: 12px;
+}
+
+.perf-bar-fill {
+  display: block;
+  height: 1px;
+  background: var(--text-tertiary);
+  position: absolute;
+  top: 50%;
+}
+
+.perf-bar-fill.accent {
+  background: var(--syntax-func);
+}
+
+/* ── Social proof strip ──────────────────────────── */
+.logo-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2xl);
+  justify-content: center;
+  opacity: 0.5;
+}
+
+.logo-strip svg {
+  height: 24px;
+  color: var(--text-tertiary);
+}
+
+/* ── Footer ──────────────────────────────────────── */
+.footer {
+  border-top: 1px solid var(--border-subtle);
+  padding: var(--space-3xl) 0;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2xl);
+}
+
+@media (min-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 2fr repeat(3, 1fr);
+  }
+}
+
+.footer-heading {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.footer-link {
+  display: block;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  padding: 4px 0;
+  transition: color var(--duration-quick) ease-out;
+}
+
+.footer-link:hover {
+  color: var(--text-secondary);
+}
+
+.footer-meta {
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-disabled);
+}
+
+/* ── Fade-in animation ───────────────────────────── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity var(--duration-fade) var(--ease-out),
+              transform var(--duration-fade) var(--ease-out);
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ── Mobile scroll affordance ────────────────────── */
+.scroll-fade {
+  position: absolute;
+  inset-block: 0;
+  right: 0;
+  width: 24px;
+  pointer-events: none;
+  background: linear-gradient(to left, var(--bg-surface), transparent);
+}
+
+@media (min-width: 768px) {
+  .scroll-fade {
+    display: none;
+  }
+}
+
+/* ── Tabbed code frames ──────────────────────────── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.tab-button {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--text-tertiary);
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color var(--duration-quick) ease-out,
+              border-color var(--duration-quick) ease-out;
+}
+
+.tab-button:hover {
+  color: var(--text-secondary);
+}
+
+.tab-button.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--syntax-func);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ── Inline code ─────────────────────────────────── */
+.inline-code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--bg-elevated);
+  color: var(--syntax-func);
+  padding: 2px 6px;
+  border-radius: var(--radius-inline);
+}
+
+/* ── Feature grid with hairline gaps ─────────────── */
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  background: var(--border-subtle);
+  gap: 1px;
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+@media (min-width: 640px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .feature-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.feature-cell {
+  background: var(--bg-surface);
+  padding: var(--space-xl);
+}
+
+.feature-icon {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+  width: 20px;
+  height: 20px;
+}
+
+.feature-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.feature-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--space-md);
+}
+
+.feature-code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  background: var(--bg-base);
+  padding: 6px 10px;
+  border-radius: var(--radius-inline);
+  display: inline-block;
+}
+
+/* ── CTA section ─────────────────────────────────── */
+.cta-section {
+  text-align: center;
+  padding: var(--space-4xl) 0;
+}
+
+/* ── Mobile responsive ───────────────────────────── */
+@media (max-width: 639px) {
+  .page-container {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+
+  .section {
+    padding-top: var(--space-3xl);
+    padding-bottom: var(--space-3xl);
+  }
+
+  .code-text,
+  .code-content {
+    font-size: 13px;
+  }
+
+  .code-sm {
+    font-size: 12px;
+  }
+
+  .h3 {
+    font-size: 18px;
+  }
+
+  .body-text {
+    font-size: 15px;
+  }
+
+  .line-number {
+    padding-right: var(--space-sm);
+  }
+}
+
+/* ── Link accent colour from syntax palette ──────── */
+a.accent-link {
+  color: var(--syntax-func);
+  text-decoration: none;
+  transition: opacity var(--duration-quick) ease-out;
+}
+
+a.accent-link:hover {
+  opacity: 0.8;
+}
+
+/* ── Mobile nav toggle ───────────────────────────── */
+.mobile-nav-toggle {
+  display: flex;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-xs);
+}
+
+@media (min-width: 768px) {
+  .mobile-nav-toggle {
+    display: none;
+  }
+}
+
+/* ── Selection ───────────────────────────────────── */
+::selection {
+  background: rgba(130, 170, 255, 0.2);
+  color: var(--text-primary);
+}
+
+/* ── Focus ───────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--syntax-func);
+  outline-offset: 2px;
+}
