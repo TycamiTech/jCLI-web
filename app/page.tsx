@@ -232,6 +232,7 @@ function T({ children }: { children: React.ReactNode }) { return <span className
    ───────────────────────────────────────────────────── */
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 10);
@@ -239,41 +240,137 @@ function Nav() {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
+  // Lock body scroll and listen for Escape key when mobile menu is open
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleKeyDown);
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [mobileMenuOpen]);
+
+  const navItems = [
+    { label: "Quickstart", href: "#quickstart" },
+    { label: "Architecture", href: "#how-it-works" },
+    { label: "Features", href: "#features" },
+    { label: "CLI Demo", href: "#terminal" },
+    { label: "Windows GUI", href: "#windows-gui" },
+    { label: "Benchmarks", href: "#benchmarks" },
+    { label: "Deploy", href: "#deploy" },
+  ];
+
   return (
-    <nav className={`nav ${scrolled ? "scrolled" : ""}`} aria-label="Main navigation">
-      <div className="nav-inner">
-        <a href="#" className="nav-logo" aria-label="jCLI Home">
-          <IconTerminal size={20} />
-          <span>jCLI</span>
-        </a>
-
-        <ul className="nav-links">
-          <li><a href="#quickstart" className="nav-link">Quickstart</a></li>
-          <li><a href="#how-it-works" className="nav-link">Architecture</a></li>
-          <li><a href="#features" className="nav-link">Features</a></li>
-          <li><a href="#terminal" className="nav-link">CLI Demo</a></li>
-          <li><a href="#windows-gui" className="nav-link">Windows GUI</a></li>
-          <li><a href="#benchmarks" className="nav-link">Benchmarks</a></li>
-          <li><a href="#deploy" className="nav-link">Deploy</a></li>
-        </ul>
-
-        <div className="nav-right">
-          <a
-            href="https://github.com/TycamiTech/jCLI-File-Sharing"
-            className="nav-stars"
-            aria-label="GitHub Repository"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <IconGitHub size={14} />
-            <span>GitHub</span>
+    <>
+      <nav className={`nav ${scrolled ? "scrolled" : ""}`} aria-label="Main navigation">
+        <div className="nav-inner">
+          <a href="#" className="nav-logo" aria-label="jCLI Home">
+            <IconTerminal size={20} />
+            <span>jCLI</span>
           </a>
-          <a href="#quickstart" className="btn-primary" style={{ padding: "8px 16px", fontSize: 13 }}>
-            Drop a File
-          </a>
+
+          <ul className="nav-links">
+            {navItems.map((item) => (
+              <li key={item.href}>
+                <a href={item.href} className="nav-link">
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <div className="nav-right">
+            <a
+              href="https://github.com/TycamiTech/jCLI-File-Sharing"
+              className="nav-stars"
+              aria-label="GitHub Repository"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <IconGitHub size={14} />
+              <span>GitHub</span>
+            </a>
+            <a href="#quickstart" className="btn-primary nav-drop-btn" style={{ padding: "8px 14px", fontSize: 13, whiteSpace: "nowrap" }}>
+              Drop a File
+            </a>
+
+            <button
+              className="nav-mobile-btn"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? (
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              ) : (
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <line x1="3" y1="12" x2="21" y2="12" />
+                  <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {mobileMenuOpen && (
+        <>
+          <div className="mobile-nav-backdrop" onClick={() => setMobileMenuOpen(false)} />
+          <div className="mobile-nav-drawer" role="dialog" aria-label="Menu Navigasi Mobile">
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              {navItems.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="mobile-nav-item"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <span>{item.label}</span>
+                  <IconArrowRight size={14} />
+                </a>
+              ))}
+            </div>
+
+            <div className="mobile-nav-divider" />
+
+            <a
+              href="https://github.com/TycamiTech/jCLI-File-Sharing"
+              className="mobile-nav-item"
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <IconGitHub size={16} /> GitHub Source Code
+              </span>
+              <IconArrowRight size={14} />
+            </a>
+
+            <div style={{ marginTop: 14 }}>
+              <a
+                href="#quickstart"
+                className="btn-primary"
+                style={{ width: "100%", justifyContent: "center", padding: "12px 16px", fontSize: 14 }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Drop a File Now <IconArrowRight size={14} />
+              </a>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 }
 
@@ -301,24 +398,24 @@ written, err := io.CopyBuffer(dst, io.LimitReader(part, maxCap), buf)
 return fmt.Sprintf("%s/%s/%s", cfg.BaseURL, dropID, safeFilename)`;
 
   return (
-    <section style={{ paddingTop: 80, paddingBottom: 80 }}>
+    <section style={{ paddingTop: "clamp(36px, 8vw, 80px)", paddingBottom: "clamp(36px, 8vw, 80px)" }}>
       <div className="page-container">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 48, alignItems: "center" }}>
+        <div className="hero-grid">
           {/* Left: Headline & one-liners */}
           <div>
-            <h1 className="h1" style={{ marginBottom: 24, maxWidth: 640 }}>
+            <h1 className="h1" style={{ marginBottom: 20 }}>
               Ephemeral file drops for terminals.{" "}
               <span className="text-secondary-span">
                 Zero dependencies. Stream gigabytes with constant memory.
               </span>
             </h1>
 
-            <p className="body-text" style={{ marginBottom: 32, maxWidth: 540 }}>
+            <p className="body-text" style={{ marginBottom: 28, maxWidth: 540 }}>
               <strong>jCLI</strong> is a high-throughput, self-hosted file sharing daemon built purely with the Go standard library. 
               Upload via a simple <code>curl</code> command to get an instant direct link, or launch a full Windows GUI directly in RAM with zero installation.
             </p>
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 32 }}>
+            <div className="hero-actions">
               <a href="#quickstart" className="btn-primary">
                 Upload File via CLI <IconArrowRight size={14} />
               </a>
@@ -328,7 +425,7 @@ return fmt.Sprintf("%s/%s/%s", cfg.BaseURL, dropID, safeFilename)`;
             </div>
 
             {/* Install / Run command */}
-            <div className="install-block" style={{ maxWidth: 440 }}>
+            <div className="install-block hero-install-block">
               <span className="install-prompt">$</span>
               <code className="install-command">curl -F &quot;file=@data.tar.gz&quot; http://103.130.16.107:8080/</code>
               <CopyButton text="curl -F &quot;file=@data.tar.gz&quot; http://103.130.16.107:8080/" />
@@ -375,14 +472,6 @@ return fmt.Sprintf("%s/%s/%s", cfg.BaseURL, dropID, safeFilename)`;
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @media (min-width: 1024px) {
-          div[style*="grid-template-columns: 1fr"] {
-            grid-template-columns: 5fr 6fr !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }
@@ -392,11 +481,13 @@ return fmt.Sprintf("%s/%s/%s", cfg.BaseURL, dropID, safeFilename)`;
    ───────────────────────────────────────────────────── */
 function Quickstart() {
   const [tab, setTab] = useState<"curl-up" | "curl-down" | "win-gui" | "bash-alias" | "build">("curl-up");
+  const [sampleFile, setSampleFile] = useState("document.pdf");
+  const samplePresets = ["document.pdf", "backup.tar.gz", "dataset.zip", "photo.png"];
 
   const commands: Record<string, { cmd: string; desc: string; label: string }> = {
     "curl-up": {
       label: "Upload (curl)",
-      cmd: "curl -F \"file=@document.pdf\" http://103.130.16.107:8080/",
+      cmd: `curl -F "file=@${sampleFile}" http://103.130.16.107:8080/`,
       desc: "Upload any file straight from terminal. jCLI replies immediately with the plain download link.",
     },
     "curl-down": {
@@ -431,7 +522,7 @@ function Quickstart() {
           </p>
         </div>
 
-        <div className="pkg-tabs" style={{ justifyContent: "center", flexWrap: "wrap" }}>
+        <div className="pkg-tabs" style={{ justifyContent: "flex-start", scrollSnapType: "x mandatory", paddingBottom: 6 }}>
           {Object.entries(commands).map(([key, item]) => (
             <button
               key={key}
@@ -445,11 +536,35 @@ function Quickstart() {
 
         <div className="install-block" style={{ minHeight: 52 }}>
           <span className="install-prompt">{tab === "win-gui" ? "PS >" : "$"}</span>
-          <code className="install-command" key={tab}>
+          <code className="install-command" key={tab + sampleFile}>
             {commands[tab].cmd}
           </code>
           <CopyButton text={commands[tab].cmd} />
         </div>
+
+        {tab === "curl-up" && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, flexWrap: "wrap", justifyContent: "center" }}>
+            <span style={{ fontSize: 12, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>Pilih contoh file:</span>
+            {samplePresets.map((file) => (
+              <button
+                key={file}
+                onClick={() => setSampleFile(file)}
+                style={{
+                  background: sampleFile === file ? "var(--bg-elevated)" : "transparent",
+                  border: `1px solid ${sampleFile === file ? "var(--syntax-func)" : "var(--border-subtle)"}`,
+                  color: sampleFile === file ? "var(--text-primary)" : "var(--text-secondary)",
+                  padding: "4px 8px",
+                  borderRadius: "var(--radius-tab)",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 12,
+                  cursor: "pointer",
+                }}
+              >
+                {file}
+              </button>
+            ))}
+          </div>
+        )}
 
         <p className="small-text" style={{ textAlign: "center", marginTop: 12, color: "var(--text-tertiary)" }}>
           {commands[tab].desc}
@@ -763,7 +878,7 @@ function WindowsGUI() {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 32, alignItems: "center" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 32, alignItems: "center", width: "100%", minWidth: 0 }}>
           <div>
             <div className="install-block" style={{ marginBottom: 20 }}>
               <span className="install-prompt">PS &gt;</span>
@@ -771,23 +886,23 @@ function WindowsGUI() {
               <CopyButton text="irm http://103.130.16.107:8080/app | iex" />
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
-              <div style={{ background: "var(--bg-surface)", padding: 20, borderRadius: "var(--radius-panel)", border: "1px solid var(--border-subtle)" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 250px), 1fr))", gap: 16 }}>
+              <div style={{ background: "var(--bg-surface)", padding: 18, borderRadius: "var(--radius-panel)", border: "1px solid var(--border-subtle)" }}>
                 <div style={{ color: "var(--syntax-func)", fontWeight: 600, marginBottom: 6 }}>100% In-Memory Execution</div>
                 <p className="small-text">No .exe or .msi installation required. Runs cleanly within PowerShell runtime without creating temp binary clutter.</p>
               </div>
 
-              <div style={{ background: "var(--bg-surface)", padding: 20, borderRadius: "var(--radius-panel)", border: "1px solid var(--border-subtle)" }}>
+              <div style={{ background: "var(--bg-surface)", padding: 18, borderRadius: "var(--radius-panel)", border: "1px solid var(--border-subtle)" }}>
                 <div style={{ color: "var(--syntax-string)", fontWeight: 600, marginBottom: 6 }}>Drag &amp; Drop Upload</div>
                 <p className="small-text">Drag any file into the window. Live progress indicator, percentage tracking, and automatic link copying to clipboard.</p>
               </div>
 
-              <div style={{ background: "var(--bg-surface)", padding: 20, borderRadius: "var(--radius-panel)", border: "1px solid var(--border-subtle)" }}>
+              <div style={{ background: "var(--bg-surface)", padding: 18, borderRadius: "var(--radius-panel)", border: "1px solid var(--border-subtle)" }}>
                 <div style={{ color: "var(--syntax-keyword)", fontWeight: 600, marginBottom: 6 }}>Built-in Downloader</div>
                 <p className="small-text">Paste any jCLI link into the GUI to download directly with folder selection and one-click file opening.</p>
               </div>
 
-              <div style={{ background: "var(--bg-surface)", padding: 20, borderRadius: "var(--radius-panel)", border: "1px solid var(--border-subtle)" }}>
+              <div style={{ background: "var(--bg-surface)", padding: 18, borderRadius: "var(--radius-panel)", border: "1px solid var(--border-subtle)" }}>
                 <div style={{ color: "var(--syntax-const)", fontWeight: 600, marginBottom: 6 }}>Terminal Dark Aesthetic</div>
                 <p className="small-text">Crafted with modern Windows Presentation Foundation (WPF) styling adhering to terminal dark design standards.</p>
               </div>
@@ -835,7 +950,11 @@ function Benchmarks() {
 
         <div className="frame-outer">
           <div className="frame-inner">
-            <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+            <div className="table-scroll-hint">
+              <span>← Geser tabel untuk melihat perbandingan</span>
+              <span style={{ color: "var(--syntax-func)" }}>jCLI vs Alternatif</span>
+            </div>
+            <div className="table-scroll-container">
               <table className="perf-table">
                 <thead>
                   <tr>
@@ -907,7 +1026,7 @@ function Deploy() {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 32 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 32, width: "100%", minWidth: 0 }}>
           {/* Environment Variables Table */}
           <div className="frame-outer">
             <div className="frame-inner">
@@ -915,7 +1034,11 @@ function Deploy() {
                 <span className="code-chrome-filename">Environment Variables</span>
                 <span className="code-chrome-lang">Config</span>
               </div>
-              <div style={{ overflowX: "auto" }}>
+              <div className="table-scroll-hint">
+                <span>← Geser untuk rincian konfigurasi</span>
+                <span style={{ color: "var(--syntax-func)" }}>7 Variabel</span>
+              </div>
+              <div className="table-scroll-container">
                 <table className="perf-table">
                   <thead>
                     <tr>
@@ -1018,7 +1141,7 @@ function CTA() {
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
+        <div className="cta-actions" style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
           <a href="#quickstart" className="btn-primary">
             Quickstart Guide <IconArrowRight size={14} />
           </a>
@@ -1094,6 +1217,40 @@ function Footer() {
 }
 
 /* ─────────────────────────────────────────────────────
+   BACK TO TOP FLOATING BUTTON
+   ───────────────────────────────────────────────────── */
+function BackToTop() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setVisible(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  if (!visible) return null;
+
+  return (
+    <button
+      onClick={scrollToTop}
+      className="back-to-top-btn"
+      aria-label="Kembali ke atas"
+      title="Kembali ke atas"
+    >
+      <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="18 15 12 9 6 15" />
+      </svg>
+    </button>
+  );
+}
+
+/* ─────────────────────────────────────────────────────
    PAGE ASSEMBLY
    ───────────────────────────────────────────────────── */
 export default function Home() {
@@ -1112,6 +1269,7 @@ export default function Home() {
         <CTA />
       </main>
       <Footer />
+      <BackToTop />
     </>
   );
 }
